@@ -5,11 +5,11 @@ import csv
 
 root = Tk()
 root.title("Income account and savings")
-root.geometry("700x700")
+root.geometry("700x720")
 time = ''
 description = StringVar()
-income = StringVar()
-expence = StringVar()
+income = IntVar()
+expence = IntVar()
 result1 = StringVar()
 result2 = StringVar()
 result3 = StringVar()
@@ -42,8 +42,6 @@ def writefile():
     date = datetime.now().strftime("%d/%m/%Y")
     data1 = [desc, inc, exp, date, time_now]
     data1 = list(replaced(data1, '', '0'))
-    inc = int(data1[1])
-    exp = int(data1[2])
     with open('account.csv', 'a', newline='') as csvfile:
             writecsv = csv.writer(csvfile)
             writecsv.writerow(data1)
@@ -73,6 +71,14 @@ def readfile():
             listbox.insert(0, text)
         summary.set(f"Total : {total}")
 
+def show():
+    """show planner"""
+    plan.deiconify()
+    readplan()
+def hide():
+    """Hide Planner"""
+    plan.withdraw()
+
 label_d = Label(root, text="Description: ").pack(padx=10,pady=5)
 entry_d = Entry(root, textvariable=description).pack(padx=10,pady=5)
 label_i = Label(root, text="Income(Baht): ").pack(padx=10,pady=5)
@@ -80,13 +86,70 @@ entry_i = Entry(root, textvariable=income).pack(padx=10,pady=5)
 label_e = Label(root, text="Expence(Baht): ").pack(padx=10,pady=5)
 entry_e = Entry(root, textvariable=expence).pack(padx=10,pady=5)
 button_a = Button(root, text="Add", command=writefile).pack(padx=10,pady=5)
-button_c = Button(root, text="Check", command=readfile).pack(padx=10,pady=5)
 result_label1 = Label(root, textvariable=result1, foreground="blue").pack(padx=10,pady=5)
 result_label2 = Label(root, textvariable=result2, foreground="green").pack(padx=10,pady=5)
 result_label3 = Label(root, textvariable=result3, foreground="red").pack(padx=10,pady=5)
 summary_label =  Label(root, textvariable=summary, font=(None, 15)).pack(padx=10,pady=5)
 listbox = Listbox(root, width=50)
 listbox.pack(pady=20)
+show_plan = Button(root, text="Show Planner", command=show).pack(padx=10,pady=5)
+hide_plan = Button(root, text="Hide Planner", command=hide).pack(padx=10,pady=5)
 
+"""Planning window"""
+plan = Toplevel()
+plan.geometry("350x600")
+plan.title("Planner")
+product = StringVar()
+prices = IntVar()
+days = IntVar()
+saving = StringVar()
+
+def add_plan():
+    """Add plan on add plan button"""
+    name = product.get()
+    price = prices.get()
+    day = days.get()
+    print(name)
+    data = [name, price, day]
+    data = list(replaced(data, '', '0'))
+    print(data)
+    with open('planner.csv', 'a', newline='') as csvfile:
+        writecsv = csv.writer(csvfile)
+        writecsv.writerow(data)
+    readplan()
+
+def readplan():
+    """Read csv file"""
+    listbox2.delete(0, END)
+    with open('planner.csv') as csvfile:
+        readcsv = csv.reader(csvfile)
+        total = 0
+        for row in readcsv:
+            name = row[0]
+            price = int(row[1])
+            day = int(row[2])
+            if day != 0:
+                save = price // day + 1
+            else:
+                save = price
+            total += save
+            text = "{0:<15}\t{1:<10}\t{2:<10}\t{3:<10}".format(name, price, day, save)
+            listbox2.insert(0, text)
+        listbox2.insert(END, total)
+        saving.set(f"You have to save {total} per day")
+
+label_n = Label(plan, text="Product name").pack(padx=10,pady=5)
+entry_n = Entry(plan, textvariable=product).pack(padx=10,pady=5)
+label_p = Label(plan, text="Price").pack(padx=10,pady=5)
+entry_p = Entry(plan, textvariable=prices).pack(padx=10,pady=5)
+label_f = Label(plan, text="Days").pack(padx=10,pady=5)
+entry_f = Entry(plan, textvariable=days).pack(padx=10,pady=5)
+button_p = Button(plan, text="Plan", command=add_plan).pack(padx=10,pady=5)
+listbox2 = Listbox(plan, width=50)
+listbox2.pack(pady=20)
+saving_label = Label(plan, textvariable=saving, font=(None, 15)).pack(padx=10,pady=5)
+
+readfile()
 tick()
+plan.withdraw()
 root.mainloop()
