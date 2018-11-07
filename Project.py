@@ -2,6 +2,7 @@
 from tkinter import *
 from datetime import datetime
 import csv
+import os.path
 
 root = Tk()
 root.title("Income account and savings")
@@ -71,10 +72,13 @@ def readfile():
             listbox.insert(0, text)
         summary.set(f"Total : {total}")
 
+def start_acc():
+    summary.set("Total : 0")
+
 def show():
     """show planner"""
     plan.deiconify()
-    readplan()
+    
 def hide():
     """Hide Planner"""
     plan.withdraw()
@@ -138,6 +142,9 @@ def readplan():
         listbox2.insert(END, total)
         saving.set(f"You have to save {total} per day")
 
+def start_plan():
+    saving.set("You have to save 0 per day")
+
 label_n = Label(plan, text="Product name").pack(padx=10,pady=5)
 entry_n = Entry(plan, textvariable=product).pack(padx=10,pady=5)
 label_p = Label(plan, text="Price").pack(padx=10,pady=5)
@@ -149,7 +156,16 @@ listbox2 = Listbox(plan, width=50)
 listbox2.pack(pady=20)
 saving_label = Label(plan, textvariable=saving, font=(None, 15)).pack(padx=10,pady=5)
 
-readfile()
+if os.path.isfile("account.csv"):
+    readfile()
+else:
+    start_acc()
+
+if os.path.isfile("planner.csv"):
+    readplan()
+else:
+    start_plan()
+
 tick()
 plan.withdraw()
 root.mainloop()
