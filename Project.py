@@ -139,7 +139,6 @@ def readplan():
             total += save
             text = "{0:<15}\t{1:<10}\t{2:<10}\t{3:<10}".format(name, price, day, save)
             listbox2.insert(0, text)
-        listbox2.insert(END, total)
         saving.set(f"You have to save {total} per day")
 
 def start_plan():
