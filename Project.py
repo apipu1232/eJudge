@@ -1,5 +1,6 @@
 """Income account and savings"""
 from tkinter import *
+from tkinter import ttk
 from datetime import datetime
 import csv
 import os.path
@@ -7,6 +8,14 @@ import os.path
 root = Tk()
 root.title("Income account and savings")
 root.geometry("700x720")
+
+tab_control = ttk.Notebook(root)
+save = ttk.Frame(tab_control)
+plan = ttk.Frame(tab_control)
+tab_control.add(save, text='     Income and Expense     ')
+tab_control.add(plan, text='     Planning     ')
+tab_control.pack(expand=1, fill='both')
+
 time = ''
 description = StringVar()
 income = IntVar()
@@ -17,7 +26,7 @@ result3 = StringVar()
 summary = StringVar()
 
 """Show time"""
-clock = Label(root, font=(None, 25))
+clock = Label(root, font=(None, 20))
 clock.pack(pady=10)
 
 def replaced(sequence, old, new):
@@ -75,34 +84,22 @@ def readfile():
 def start_acc():
     summary.set("Total : 0")
 
-def show():
-    """show planner"""
-    plan.deiconify()
-    
-def hide():
-    """Hide Planner"""
-    plan.withdraw()
 
-label_d = Label(root, text="Description: ").pack(padx=10,pady=5)
-entry_d = Entry(root, textvariable=description).pack(padx=10,pady=5)
-label_i = Label(root, text="Income(Baht): ").pack(padx=10,pady=5)
-entry_i = Entry(root, textvariable=income).pack(padx=10,pady=5)
-label_e = Label(root, text="Expence(Baht): ").pack(padx=10,pady=5)
-entry_e = Entry(root, textvariable=expence).pack(padx=10,pady=5)
-button_a = Button(root, text="Add", command=writefile).pack(padx=10,pady=5)
-result_label1 = Label(root, textvariable=result1, foreground="blue").pack(padx=10,pady=5)
-result_label2 = Label(root, textvariable=result2, foreground="green").pack(padx=10,pady=5)
-result_label3 = Label(root, textvariable=result3, foreground="red").pack(padx=10,pady=5)
-summary_label =  Label(root, textvariable=summary, font=(None, 15)).pack(padx=10,pady=5)
-listbox = Listbox(root, width=50)
+label_d = Label(save, text="Description: ").pack(padx=10,pady=5)
+entry_d = Entry(save, textvariable=description).pack(padx=10,pady=5)
+label_i = Label(save, text="Income(Baht): ").pack(padx=10,pady=5)
+entry_i = Entry(save, textvariable=income).pack(padx=10,pady=5)
+label_e = Label(save, text="Expence(Baht): ").pack(padx=10,pady=5)
+entry_e = Entry(save, textvariable=expence).pack(padx=10,pady=5)
+button_a = Button(save, text="Add", command=writefile).pack(padx=10,pady=5)
+result_label1 = Label(save, textvariable=result1, foreground="blue").pack(padx=10,pady=5)
+result_label2 = Label(save, textvariable=result2, foreground="green").pack(padx=10,pady=5)
+result_label3 = Label(save, textvariable=result3, foreground="red").pack(padx=10,pady=5)
+summary_label =  Label(save, textvariable=summary, font=(None, 15)).pack(padx=10,pady=5)
+listbox = Listbox(save, width=50)
 listbox.pack(pady=20)
-show_plan = Button(root, text="Show Planner", command=show).pack(padx=10,pady=5)
-hide_plan = Button(root, text="Hide Planner", command=hide).pack(padx=10,pady=5)
 
 """Planning window"""
-plan = Toplevel()
-plan.geometry("350x600")
-plan.title("Planner")
 product = StringVar()
 prices = IntVar()
 days = IntVar()
@@ -166,5 +163,4 @@ else:
     start_plan()
 
 tick()
-plan.withdraw()
 root.mainloop()
