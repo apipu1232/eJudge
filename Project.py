@@ -102,18 +102,16 @@ listbox.pack(pady=20)
 """Planning window"""
 product = StringVar()
 prices = IntVar()
-days = IntVar()
+goals = StringVar()
 saving = StringVar()
 
 def add_plan():
     """Add plan on add plan button"""
     name = product.get()
     price = prices.get()
-    day = days.get()
-    print(name)
-    data = [name, price, day]
+    goal = goals.get()
+    data = [name, price, goal]
     data = list(replaced(data, '', '0'))
-    print(data)
     with open('planner.csv', 'a', newline='') as csvfile:
         writecsv = csv.writer(csvfile)
         writecsv.writerow(data)
@@ -122,21 +120,82 @@ def add_plan():
 def readplan():
     """Read csv file"""
     listbox2.delete(0, END)
+    date = datetime.now().strftime("%d/%m/%Y")
     with open('planner.csv') as csvfile:
         readcsv = csv.reader(csvfile)
         total = 0
         for row in readcsv:
             name = row[0]
             price = int(row[1])
-            day = int(row[2])
-            if day != 0:
-                save = price // day + 1
-            else:
-                save = price
+            goal = row[2]
+            day = timess(date, goal)
+            save = price // day + 1
             total += save
             text = "{0:<15}\t{1:<10}\t{2:<10}\t{3:<10}".format(name, price, day, save)
             listbox2.insert(0, text)
         saving.set(f"You have to save {total} per day")
+
+def timess(Today,Goalday):
+    Today = Today.split("/")
+    day1 = int(Today[0])
+    month1 = int(Today[1])
+    year1 = int(Today[2])
+    Goalday = Goalday.split("/")
+    day2 = int(Goalday[0])
+    month2 = int(Goalday[1])
+    year2 = int(Goalday[2])
+    months = {1:31, 2:28, 3:31, 4:30, 5:31, 6:30, 7:31, 8:31, 9:30, 10:31, 11:30, 12:31}
+    day = 0
+    # นับวัน
+    if day1 > day2:
+        day = day + day2 + (months[month1] - day1)
+    elif day1 < day2:
+        day = day + (day2 - day1)
+    elif day1 == day2:
+        day = day + (months[month1] - day1) + day2
+    # นับเดือน
+    if month1 > month2:
+        for i in range(month1 + 1, 12):
+            day = day + months[i]
+        for j in range(1, month2):
+            day = day + months[j]
+    elif month1 < month2:
+        for k in range(month1 + 1, month2):
+            day = day + months[k]
+    elif month1 == month2:
+        pass
+    # กรณี วันเเดียวกัน เดือนเดียวกัน เเต่คนละปี
+    if day1 == day2 and month1 == month2:
+        day = 0
+    # นับปี
+    day = day + ((year2 - year1) * (365 * (year2 > year1)))
+    # เช็ค leapyear.
+    leapyear = 0
+    if month1 < 3:
+        if month1 == 2 and day1 == 29:
+            for l in range(year1 + 1, year2 + 1):
+                if l % 400 == 0:
+                    leapyear = leapyear + 1
+                elif l % 4 == 0:
+                    leapyear = leapyear + 1
+        elif year1 != year2:
+            for m in range(year1, year2 + 1):
+                if m % 400 == 0:
+                    leapyear = leapyear + 1
+                elif m % 4 == 0:
+                    leapyear = leapyear + 1
+        elif year1 == year2:
+            if year1 % 400 == 0:
+                leapyear = leapyear + 1
+            elif year1 % 4 == 0:
+                leapyear = leapyear + 1
+    elif year1 != year2:
+        for n in range(year1 + 1, year2 + 1):
+                if n % 400 == 0:
+                    leapyear = leapyear + 1
+                elif n % 4 == 0:
+                    leapyear = leapyear + 1
+    return day + leapyear
 
 def start_plan():
     saving.set("You have to save 0 per day")
@@ -145,8 +204,8 @@ label_n = Label(plan, text="Product name").pack(padx=10,pady=5)
 entry_n = Entry(plan, textvariable=product).pack(padx=10,pady=5)
 label_p = Label(plan, text="Price").pack(padx=10,pady=5)
 entry_p = Entry(plan, textvariable=prices).pack(padx=10,pady=5)
-label_f = Label(plan, text="Days").pack(padx=10,pady=5)
-entry_f = Entry(plan, textvariable=days).pack(padx=10,pady=5)
+label_f = Label(plan, text="Goal date (dd/mm/yyyy)").pack(padx=10,pady=5)
+entry_f = Entry(plan, textvariable=goals).pack(padx=10,pady=5)
 button_p = Button(plan, text="Plan", command=add_plan).pack(padx=10,pady=5)
 listbox2 = Listbox(plan, width=50)
 listbox2.pack(pady=20)
